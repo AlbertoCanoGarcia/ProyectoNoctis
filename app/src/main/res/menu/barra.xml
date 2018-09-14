@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Ventanas.MainActivity">
+    <item android:id="@+id/anadir"
+        android:title="Nuevo gasto"
+        app:showAsAction="never"
+        android:orderInCategory="5"/>
+    <item android:id="@+id/gastosTotales"
+        android:title="Lista de gastos"
+        app:showAsAction="never"
+        android:orderInCategory="5"/>
+</menu>
