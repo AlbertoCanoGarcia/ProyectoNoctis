@@ -11,4 +11,16 @@
         android:title="Lista de gastos"
         app:showAsAction="never"
         android:orderInCategory="5"/>
+    <item android:id="@+id/nuevoIngreso"
+        android:title="Nuevo ingreso"
+        app:showAsAction="never"
+        android:orderInCategory="5"/>
+    <item android:id="@+id/ingresosTotales"
+        android:title="Lista de ingresos"
+        app:showAsAction="never"
+        android:orderInCategory="5"/>
+    <item android:id="@+id/saldo"
+        android:title="Saldo"
+        app:showAsAction="never"
+        android:orderInCategory="5"/>
 </menu>
