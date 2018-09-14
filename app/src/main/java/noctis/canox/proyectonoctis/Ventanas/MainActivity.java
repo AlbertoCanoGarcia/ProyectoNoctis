@@ -87,15 +87,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
                 return true;
             case R.id.nuevoIngreso:
-                i = new Intent(con,CrearIngreso.class);
+                i = new Intent(con,CrearIngresos.class);
+                i.putExtra("fecha",fecha);
                 startActivity(i);
                 return true;
             case R.id.ingresosTotales:
                 i = new Intent(con,ListaIngresos.class);
                 startActivity(i);
+                return true;
             case R.id.saldo:
                 i = new Intent(con,Saldo.class);
                 startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -22,7 +22,7 @@ public class BaseDatos {
     String selectFechas="Select distinct Fecha from Gastos";
     String selectGastoTotal="Select sum(dinero) from Gastos ";
     String selectIngresos="Select * from Ingresos  Order by fecha asc";
-    String selectIngresosTotal="Select sum(dinero) from Ingreso";
+    String selectIngresosTotal="Select sum(dinero) from Ingresos";
     public BaseDatos(Context context){
         this.context=context;
     }

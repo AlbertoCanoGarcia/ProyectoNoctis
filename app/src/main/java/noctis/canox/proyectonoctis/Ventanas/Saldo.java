@@ -19,6 +19,7 @@ public class Saldo extends AppCompatActivity {
         setContentView(R.layout.activity_saldo);
         DecimalFormat df = new DecimalFormat("0.00");
         bd= new BaseDatos(this);
+        bd.crearBaseDatos();
         txtSaldo=findViewById(R.id.saldo);
         saldo=bd.cargarIngresosTotal()-bd.cargarGastoTotal();
         txtSaldo.setText(df.format(saldo));
