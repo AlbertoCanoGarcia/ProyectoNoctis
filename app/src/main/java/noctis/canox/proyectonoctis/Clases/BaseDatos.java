@@ -30,6 +30,7 @@ public class BaseDatos {
         baseDatos = context.openOrCreateDatabase("ProyectoNoctis", MODE_PRIVATE,null) ;
         //baseDatos.execSQL("Drop Table Categoria");
         //baseDatos.execSQL("Drop Table Gastos");
+        //baseDatos.execSQL("Drop Table Ingresos");
         String sqlCrearTabla2=
                 "CREATE TABLE IF NOT EXISTS Categoria(" +
                         "id integer primary key  AUTOINCREMENT UNIQUE NOT NULL,"+

@@ -18,6 +18,13 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.lambdainvoker.*;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,15 +32,18 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
 import noctis.canox.proyectonoctis.Clases.Categoria;
+import noctis.canox.proyectonoctis.Interfaz;
 import noctis.canox.proyectonoctis.Lambda.MyInterface;
 import noctis.canox.proyectonoctis.R;
 import noctis.canox.proyectonoctis.Lambda.RequestClass;
 import noctis.canox.proyectonoctis.Lambda.ResponseClass;
 
-public class CrearGasto extends AppCompatActivity {
+public class CrearGasto extends AppCompatActivity implements Interfaz {
 private Button crear;
 private EditText txtNombre, txtDinero;
 private MultiAutoCompleteTextView txtCategoria;
@@ -47,6 +57,7 @@ private SimpleDateFormat formatoDeFecha;
 private ArrayAdapter<String> adaptador;
 private ArrayList<Categoria>arrayCategoria;
 private Context context;
+RequestQueue requestQueue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +67,8 @@ private Context context;
         txtDinero=findViewById(R.id.dineroGasto);
         txtFecha=findViewById(R.id.Fecha);
         crear= findViewById(R.id.Boton);
+        requestQueue = Volley.newRequestQueue(this);
+
         context=this;
         a=getIntent();
 
@@ -77,6 +90,7 @@ private Context context;
                 bd.insertarCategoria(categoria);
                 bd.insertarGasto(nombre,dinero,bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId(),fecha);
                 finish();
+               // enviarDatos();
             }
         });
 
@@ -92,7 +106,28 @@ private Context context;
         txtCategoria.setAdapter(adaptador);
         txtCategoria.setThreshold(1);
     }
+    public void enviarDatos() {
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
 
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("nombre", "willyrex");
+                map.put("telefono", "777");
+                return map;
+            }
+
+        };
+        requestQueue.add(request);
+    }
    /* private void Lambda(){
         // Create an instance of CognitoCachingCredentialsProvider
         CognitoCachingCredentialsProvider cognitoProvider = new CognitoCachingCredentialsProvider(
