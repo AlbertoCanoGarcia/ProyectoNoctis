@@ -1,9 +1,9 @@
 package noctis.canox.proyectonoctis.Ventanas;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
+import android.app.VoiceInteractor;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,20 +15,17 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.lambdainvoker.*;
-import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.regions.Regions;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,27 +34,28 @@ import java.util.Map;
 
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
 import noctis.canox.proyectonoctis.Clases.Categoria;
-import noctis.canox.proyectonoctis.Interfaz;
-import noctis.canox.proyectonoctis.Lambda.MyInterface;
 import noctis.canox.proyectonoctis.R;
-import noctis.canox.proyectonoctis.Lambda.RequestClass;
-import noctis.canox.proyectonoctis.Lambda.ResponseClass;
 
-public class CrearGasto extends AppCompatActivity implements Interfaz {
+public class CrearGasto extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
 private Button crear;
 private EditText txtNombre, txtDinero;
 private MultiAutoCompleteTextView txtCategoria;
 private TextView txtFecha;
+
 public String nombre, categoria,f;
 public Date fecha;
 public double dinero;
+
 public Intent a;
 private BaseDatos bd;
 private SimpleDateFormat formatoDeFecha;
+
 private ArrayAdapter<String> adaptador;
 private ArrayList<Categoria>arrayCategoria;
 private Context context;
-RequestQueue requestQueue;
+
+private RequestQueue requestQueue;
+private JsonObjectRequest jsonObjectRequest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,16 +79,18 @@ RequestQueue requestQueue;
         bd.crearBaseDatos();
         rellenarCategorias();
 
+        requestQueue= Volley.newRequestQueue(this);
+
         crear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nombre=txtNombre.getText().toString();
+               nombre=txtNombre.getText().toString();
                 categoria=txtCategoria.getText().toString();
                 dinero=Double.parseDouble(txtDinero.getText().toString());
                 bd.insertarCategoria(categoria);
                 bd.insertarGasto(nombre,dinero,bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId(),fecha);
                 finish();
-               // enviarDatos();
+               //enviarDatos();
             }
         });
 
@@ -107,26 +107,24 @@ RequestQueue requestQueue;
         txtCategoria.setThreshold(1);
     }
     public void enviarDatos() {
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
+        String url="http://192.168.1.73/Basedatos/ConexionBD.php?id=3&nombre="+nombre+"&telefono="+categoria+"";
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        jsonObjectRequest= new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+        requestQueue.add(jsonObjectRequest);
+    }
 
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("nombre", "willyrex");
-                map.put("telefono", "777");
-                return map;
-            }
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Toast.makeText(context,"Fallo al crear gasto",Toast.LENGTH_SHORT).show();
+        Log.i("Error",error.toString());
+    }
 
-        };
-        requestQueue.add(request);
+    @Override
+    public void onResponse(JSONObject response) {
+        Toast.makeText(context,"Gasto creado correctamente",Toast.LENGTH_SHORT).show();
+        txtNombre.setText("");
+        txtCategoria.setText("");
+        txtDinero.setText("");
     }
    /* private void Lambda(){
         // Create an instance of CognitoCachingCredentialsProvider
