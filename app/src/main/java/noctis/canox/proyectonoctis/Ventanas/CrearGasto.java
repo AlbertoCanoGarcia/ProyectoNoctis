@@ -1,12 +1,10 @@
 package noctis.canox.proyectonoctis.Ventanas;
 
-import android.app.ProgressDialog;
-import android.app.VoiceInteractor;
 import android.content.Context;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,25 +13,30 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
 import noctis.canox.proyectonoctis.Clases.Categoria;
+import noctis.canox.proyectonoctis.Clases.CustomSSLSocketFactory;
 import noctis.canox.proyectonoctis.R;
 
 public class CrearGasto extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
@@ -70,6 +73,9 @@ private JsonObjectRequest jsonObjectRequest;
         context=this;
         a=getIntent();
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy); // Permite que se ejecute el hilo de descarga
+
         formatoDeFecha= new SimpleDateFormat("dd-MM-yyyy");
         fecha=(Date) a.getExtras().get("fecha");
         f=formatoDeFecha.format(fecha);
@@ -85,15 +91,15 @@ private JsonObjectRequest jsonObjectRequest;
             @Override
             public void onClick(View v) {
                nombre=txtNombre.getText().toString();
-                categoria=txtCategoria.getText().toString();
-                dinero=Double.parseDouble(txtDinero.getText().toString());
-                bd.insertarCategoria(categoria);
-                bd.insertarGasto(nombre,dinero,bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId(),fecha);
-                finish();
-               //enviarDatos();
+               categoria=txtCategoria.getText().toString();
+               dinero=Double.parseDouble(txtDinero.getText().toString());
+               bd.insertarCategoria(categoria);
+               int idC=bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId()
+               bd.insertarGasto(nombre,dinero,idC,fecha);
+               BDremotaInsertaGasto();
+               finish();
             }
         });
-
     }
     public void rellenarCategorias(){
         arrayCategoria=bd.cargarCategoria();
@@ -106,17 +112,36 @@ private JsonObjectRequest jsonObjectRequest;
         txtCategoria.setAdapter(adaptador);
         txtCategoria.setThreshold(1);
     }
-    public void enviarDatos() {
-        String url="http://192.168.1.73/Basedatos/ConexionBD.php?id=3&nombre="+nombre+"&telefono="+categoria+"";
+    public void BDremotaInsertaGasto(String nombre , int categoria, Double dinero) {
+        String url="http://proyectoalbertocano.000webhostapp.com/ConexionBD2.php?" +
+                "id=1&Nombre="+nombre+"&Dinero="+dinero+"&categoria="+categoria+"&Fecha="+fecha+"";
+      /*  URL url2 = null;
+        try {
+            url2 = new URL("https://proyectoalbertocano.000webhostapp.com");
+            HttpsURLConnection connection = (HttpsURLConnection) url2.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setSSLSocketFactory(CustomSSLSocketFactory.getSSLSocketFactory(context));*/
 
-        jsonObjectRequest= new JsonObjectRequest(Request.Method.GET,url,null,this,this);
-        requestQueue.add(jsonObjectRequest);
-    }
+            jsonObjectRequest= new JsonObjectRequest(Request.Method.POST,url,null,this,this);
+            requestQueue.add(jsonObjectRequest);
+      /*  } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }*/
+
+}
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Toast.makeText(context,"Fallo al crear gasto",Toast.LENGTH_SHORT).show();
-        Log.i("Error",error.toString());
+      //  Toast.makeText(context,"Fallo al crear gasto",Toast.LENGTH_SHORT).show();
+       String a=error.toString();
     }
 
     @Override
