@@ -25,7 +25,8 @@
         <activity android:name=".Ventanas.ListaGastos" />
         <activity android:name=".Ventanas.Saldo" />
         <activity android:name=".Ventanas.CrearIngresos" />
-        <activity android:name=".Ventanas.ListaIngresos"></activity>
+        <activity android:name=".Ventanas.ListaIngresos" />
+        <activity android:name=".Ventanas.ListaCategorias"></activity>
     </application>
 
 </manifest>

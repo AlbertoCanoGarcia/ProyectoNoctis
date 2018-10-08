@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
                 i = new Intent(con,Saldo.class);
                 startActivity(i);
                 return true;
+            case R.id.listaCategorias:
+                i=new Intent(con,ListaCategorias.class);
+                startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

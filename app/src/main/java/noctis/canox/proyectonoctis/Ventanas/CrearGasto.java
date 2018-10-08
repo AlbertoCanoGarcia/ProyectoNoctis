@@ -28,6 +28,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,11 +36,12 @@ import java.util.Date;
 import javax.net.ssl.HttpsURLConnection;
 
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
+import noctis.canox.proyectonoctis.Clases.BaseDatosRemota;
 import noctis.canox.proyectonoctis.Clases.Categoria;
 import noctis.canox.proyectonoctis.Clases.CustomSSLSocketFactory;
 import noctis.canox.proyectonoctis.R;
 
-public class CrearGasto extends AppCompatActivity implements Response.ErrorListener, Response.Listener<JSONObject> {
+public class CrearGasto extends AppCompatActivity{
 private Button crear;
 private EditText txtNombre, txtDinero;
 private MultiAutoCompleteTextView txtCategoria;
@@ -57,8 +59,7 @@ private ArrayAdapter<String> adaptador;
 private ArrayList<Categoria>arrayCategoria;
 private Context context;
 
-private RequestQueue requestQueue;
-private JsonObjectRequest jsonObjectRequest;
+private BaseDatosRemota bdRemota;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +69,6 @@ private JsonObjectRequest jsonObjectRequest;
         txtDinero=findViewById(R.id.dineroGasto);
         txtFecha=findViewById(R.id.Fecha);
         crear= findViewById(R.id.Boton);
-        requestQueue = Volley.newRequestQueue(this);
 
         context=this;
         a=getIntent();
@@ -85,18 +85,21 @@ private JsonObjectRequest jsonObjectRequest;
         bd.crearBaseDatos();
         rellenarCategorias();
 
-        requestQueue= Volley.newRequestQueue(this);
-
+        //bdRemota=new BaseDatosRemota(this);
         crear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                nombre=txtNombre.getText().toString();
                categoria=txtCategoria.getText().toString();
                dinero=Double.parseDouble(txtDinero.getText().toString());
+               //Base de datos local
                bd.insertarCategoria(categoria);
-               int idC=bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId()
+               int idC=bd.cargarCategoria().get(bd.cargarCategoria().size()-1).getId();
                bd.insertarGasto(nombre,dinero,idC,fecha);
-               BDremotaInsertaGasto();
+               // Base de datos remota
+                // bdRemota.insertarCategoria(categoria);
+               //bdRemota.insertarGasto(nombre,1,dinero,fecha);
+
                finish();
             }
         });
@@ -112,84 +115,6 @@ private JsonObjectRequest jsonObjectRequest;
         txtCategoria.setAdapter(adaptador);
         txtCategoria.setThreshold(1);
     }
-    public void BDremotaInsertaGasto(String nombre , int categoria, Double dinero) {
-        String url="http://proyectoalbertocano.000webhostapp.com/ConexionBD2.php?" +
-                "id=1&Nombre="+nombre+"&Dinero="+dinero+"&categoria="+categoria+"&Fecha="+fecha+"";
-      /*  URL url2 = null;
-        try {
-            url2 = new URL("https://proyectoalbertocano.000webhostapp.com");
-            HttpsURLConnection connection = (HttpsURLConnection) url2.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setSSLSocketFactory(CustomSSLSocketFactory.getSSLSocketFactory(context));*/
 
-            jsonObjectRequest= new JsonObjectRequest(Request.Method.POST,url,null,this,this);
-            requestQueue.add(jsonObjectRequest);
-      /*  } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }*/
 
-}
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-      //  Toast.makeText(context,"Fallo al crear gasto",Toast.LENGTH_SHORT).show();
-       String a=error.toString();
-    }
-
-    @Override
-    public void onResponse(JSONObject response) {
-        Toast.makeText(context,"Gasto creado correctamente",Toast.LENGTH_SHORT).show();
-        txtNombre.setText("");
-        txtCategoria.setText("");
-        txtDinero.setText("");
-    }
-   /* private void Lambda(){
-        // Create an instance of CognitoCachingCredentialsProvider
-        CognitoCachingCredentialsProvider cognitoProvider = new CognitoCachingCredentialsProvider(
-                this.getApplicationContext(), "identity-pool-id", Regions.US_WEST_2);
-
-// Create LambdaInvokerFactory, to be used to instantiate the Lambda proxy.
-        LambdaInvokerFactory factory = new LambdaInvokerFactory(this.getApplicationContext(),
-                Regions.US_WEST_2, cognitoProvider);
-
-// Create the Lambda proxy object with a default Json data binder.
-// You can provide your own data binder by implementing
-// LambdaDataBinder.
-        final MyInterface myInterface = factory.build(MyInterface.class);
-
-        RequestClass request = new RequestClass("John", "Doe");
-// The Lambda function invocation results in a network call.
-// Make sure it is not called from the main thread.
-        new AsyncTask<RequestClass, Void, ResponseClass>() {
-            @Override
-            protected ResponseClass doInBackground(RequestClass... params) {
-                // invoke "echo" method. In case it fails, it will throw a
-                // LambdaFunctionException.
-                try {
-                    return myInterface.AndroidBackendLambdaFunction(params[0]);
-                } catch (LambdaFunctionException lfe) {
-                    Log.e("Tag", "Failed to invoke echo", lfe);
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(ResponseClass result) {
-                if (result == null) {
-                    return;
-                }
-
-                // Do a toast
-                Toast.makeText(CrearGasto.this, result.getGreetings(), Toast.LENGTH_LONG).show();
-            }
-        }.execute(request);
-    }*/
 }
