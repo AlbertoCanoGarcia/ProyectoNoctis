@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
@@ -44,7 +45,7 @@ import noctis.canox.proyectonoctis.R;
 public class CrearGasto extends AppCompatActivity{
 private Button crear;
 private EditText txtNombre, txtDinero;
-private MultiAutoCompleteTextView txtCategoria;
+private AutoCompleteTextView txtCategoria;
 private TextView txtFecha;
 
 public String nombre, categoria,f;
@@ -55,7 +56,7 @@ public Intent a;
 private BaseDatos bd;
 private SimpleDateFormat formatoDeFecha;
 
-private ArrayAdapter<String> adaptador;
+private ArrayAdapter<Categoria> adaptador;
 private ArrayList<Categoria>arrayCategoria;
 private Context context;
 
@@ -106,14 +107,10 @@ private BaseDatosRemota bdRemota;
     }
     public void rellenarCategorias(){
         arrayCategoria=bd.cargarCategoria();
-        int tamano=arrayCategoria.size();
-        String [] nca=new String[tamano];
-        for(int i=0;i<tamano;i++){
-            nca[i]=arrayCategoria.get(i).getCategoria();
-        }
-        adaptador=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,nca);
+        adaptador=new ArrayAdapter<Categoria>(this,android.R.layout.simple_list_item_1,arrayCategoria);
         txtCategoria.setAdapter(adaptador);
         txtCategoria.setThreshold(1);
+
     }
 
 
