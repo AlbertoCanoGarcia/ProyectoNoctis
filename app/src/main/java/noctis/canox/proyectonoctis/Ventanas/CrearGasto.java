@@ -10,36 +10,15 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.security.cert.CertificateException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
 import noctis.canox.proyectonoctis.Clases.BaseDatosRemota;
 import noctis.canox.proyectonoctis.Clases.Categoria;
-import noctis.canox.proyectonoctis.Clases.CustomSSLSocketFactory;
 import noctis.canox.proyectonoctis.R;
 
 public class CrearGasto extends AppCompatActivity{

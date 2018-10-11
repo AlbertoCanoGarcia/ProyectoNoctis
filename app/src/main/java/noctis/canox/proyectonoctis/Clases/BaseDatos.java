@@ -23,14 +23,15 @@ public class BaseDatos {
     String selectGastoTotal="Select sum(dinero) from Gastos ";
     String selectIngresos="Select * from Ingresos  Order by fecha asc";
     String selectIngresosTotal="Select sum(dinero) from Ingresos";
+    String selectGastoXCategoria="Select Categoria.categoria, sum(Dinero) From Gastos, Categoria Where Gastos.categoria=Categoria.id Group by Categoria.id";
     public BaseDatos(Context context){
         this.context=context;
     }
     public void crearBaseDatos(){
         baseDatos = context.openOrCreateDatabase("ProyectoNoctis", MODE_PRIVATE,null) ;
-        //baseDatos.execSQL("Drop Table Categoria");
-        //baseDatos.execSQL("Drop Table Gastos");
-        //baseDatos.execSQL("Drop Table Ingresos");
+//        baseDatos.execSQL("Drop Table Categoria");
+//        baseDatos.execSQL("Drop Table Gastos");
+//        baseDatos.execSQL("Drop Table Ingresos");
         String sqlCrearTabla2=
                 "CREATE TABLE IF NOT EXISTS Categoria(" +
                         "id integer primary key  AUTOINCREMENT UNIQUE NOT NULL,"+
@@ -42,7 +43,7 @@ public class BaseDatos {
                         "Dinero Decimal, " +
                         "categoria INTEGER NOT NULL, " +
                         "Fecha DATE,"+
-                        "FOREIGN KEY(Categoria) References Categoria(id))";
+                        "FOREIGN KEY(categoria) References Categoria(id))";
         String sqlCrearTabla3="CREATE TABLE IF NOT EXISTS Ingresos (" +
                 "id INTEGER  PRIMARY KEY AUTOINCREMENT," +
                 "Nombre VARCHAR(300)," +
@@ -214,5 +215,27 @@ public class BaseDatos {
             }
         }
         return gastoTotal;
+    }
+    public Object[][] gastoTotalXCategoria(){
+        Object[][] array=null;
+        Cursor c = baseDatos.rawQuery(selectGastoXCategoria, null); // consulta para coger los datos en un cursor
+//// permitirá acceder más tarde a estas columnas
+// Movemos el cursor al primer resultado
+        c.moveToFirst();
+        int filas=c.getCount();
+        array=new Object[filas][2];
+// Recorremos el resto de resultados
+        if(c.getCount()!=0){
+            int i=0;
+            // Mientras que todavia quedean direcciones por leer
+            while (i<c.getCount()) {
+                array[i][0]=c.getString(0);
+                Double a=c.getDouble(1);
+                array[i][1]=a;
+                c.moveToNext();
+                i++;
+            }
+        }
+        return array;
     }
 }

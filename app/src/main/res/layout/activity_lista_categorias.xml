@@ -5,17 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Ventanas.ListaCategorias">
-    <TextView
-        android:id="@+id/gastosCategorias"
+
+    <LinearLayout
+        android:id="@+id/layout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:textAlignment="center"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="30sp" />
-    <ListView
-        android:id="@+id/lista"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/gastosCategorias"/>
+        android:layout_height="match_parent"></LinearLayout>
 </android.widget.RelativeLayout>
