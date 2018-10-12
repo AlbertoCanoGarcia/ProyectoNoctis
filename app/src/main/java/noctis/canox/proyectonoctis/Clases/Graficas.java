@@ -4,11 +4,17 @@ import android.content.Context;
 import android.graphics.Color;
 
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.BarChart;
 import org.achartengine.chart.PieChart;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
+
+import java.util.ArrayList;
 
 public class Graficas {
     private final int[] arrayColores={Color.RED,Color.BLUE,Color.YELLOW,Color.WHITE,Color.GREEN, Color.CYAN,Color.MAGENTA,Color.DKGRAY,Color.BLACK,Color.GRAY};
@@ -16,10 +22,12 @@ public class Graficas {
     private Context context;
     private CategorySeries series;
     private XYMultipleSeriesDataset dataset;
+
     public Graficas(Context context) {
         this.context = context;
     }
-    public GraphicalView graficoTarta(Object[][] array,String texto){
+
+    public GraphicalView graficaTarta(Object[][] array,String texto){
         series=new CategorySeries(texto);
         DefaultRenderer mRenderer= new DefaultRenderer();
         SimpleSeriesRenderer renderer=null;
@@ -77,5 +85,44 @@ public class Graficas {
         mRenderer.setShowGrid(true); // we show the grid*/
         //LineChart chart=new LineChart(series,mRenderer);
   //  }
+    public GraphicalView graficaBarra(ArrayList<Double> array){
+        String[] arrayMeses= new String[] {"Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"};
+        XYSeries expenseSeries = new XYSeries("Balance mensual");
+        for(int i=0;i<array.size();i++){
+            expenseSeries.add(i, array.get(i));
+        }
+        XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
+        dataset.addSeries(expenseSeries);
 
+        XYSeriesRenderer expenseRenderer = new XYSeriesRenderer();
+        expenseRenderer.setColor(Color.CYAN); //color of the graph set to cyan<br />
+        expenseRenderer.setFillPoints(true);
+        expenseRenderer.setLineWidth(2);
+        expenseRenderer.setDisplayChartValues(true);
+        expenseRenderer.setDisplayChartValues(true);
+
+
+        XYMultipleSeriesRenderer multiRenderer = new XYMultipleSeriesRenderer();
+        multiRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.HORIZONTAL);
+        multiRenderer.setXLabels(0);
+        multiRenderer.setChartTitle("Balance mensual");
+        multiRenderer.setXTitle("2018");
+        multiRenderer.setYTitle("Euros");
+        multiRenderer.setYAxisMax(500);
+        multiRenderer.setXAxisMin(-0.5);
+        multiRenderer.setXAxisMax(11);
+        multiRenderer.setBarSpacing(0.5);
+        multiRenderer.setBackgroundColor(Color.TRANSPARENT);
+        multiRenderer.setMarginsColor(Color.TRANSPARENT);
+        multiRenderer.setApplyBackgroundColor(true);
+        multiRenderer.setMargins(new int[]{30, 30, 30, 30});
+        for(int i=0;i<arrayMeses.length;i++){
+            multiRenderer.addXTextLabel(i,arrayMeses[i]);
+        }
+
+        multiRenderer.addSeriesRenderer(expenseRenderer);
+        BarChart barChart= new BarChart(dataset,multiRenderer,BarChart.Type.DEFAULT);
+        chartView=new GraphicalView(context,barChart);
+        return chartView;
+    }
 }

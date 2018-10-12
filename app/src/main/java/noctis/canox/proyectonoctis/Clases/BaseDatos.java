@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import org.achartengine.renderer.SimpleSeriesRenderer;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -15,23 +18,24 @@ import java.util.Locale;
 import static android.content.Context.MODE_PRIVATE;
 
 public class BaseDatos {
-    SQLiteDatabase baseDatos;
-    Context context;
-    SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
-    String selectGasto="Select nombre,dinero,fecha,categoria FROM Gastos Order by fecha asc";
-    String selectFechas="Select distinct Fecha from Gastos";
-    String selectGastoTotal="Select sum(dinero) from Gastos ";
-    String selectIngresos="Select * from Ingresos  Order by fecha asc";
-    String selectIngresosTotal="Select sum(dinero) from Ingresos";
-    String selectGastoXCategoria="Select Categoria.categoria, sum(Dinero) From Gastos, Categoria Where Gastos.categoria=Categoria.id Group by Categoria.id";
+    private SQLiteDatabase baseDatos;
+    private Context context;
+
+    private String selectGasto="Select nombre,dinero,Fecha,categoria FROM Gastos Order by Fecha desc";
+    private String selectFechas="Select distinct Fecha from Gastos";
+    private String selectGastoTotal="Select sum(dinero) from Gastos ";
+    private String selectIngresos="Select * from Ingresos  Order by Fecha asc";
+    private String selectIngresosTotal="Select sum(dinero) from Ingresos";
+    private String selectGastoXCategoria="Select Categoria.categoria, sum(Dinero) From Gastos, Categoria Where Gastos.categoria=Categoria.id Group by Categoria.id";
+  //  private String selectGastoXMes="Select sum(Dinero) from Gastos Where Fecha BETWEEN '2018-01-01' and '2018-01-31'";
     public BaseDatos(Context context){
         this.context=context;
     }
     public void crearBaseDatos(){
-        baseDatos = context.openOrCreateDatabase("ProyectoNoctis", MODE_PRIVATE,null) ;
+       baseDatos = context.openOrCreateDatabase("ProyectoNoctis", MODE_PRIVATE,null) ;
 //        baseDatos.execSQL("Drop Table Categoria");
 //        baseDatos.execSQL("Drop Table Gastos");
-//        baseDatos.execSQL("Drop Table Ingresos");
+//      baseDatos.execSQL("Drop Table Ingresos");
         String sqlCrearTabla2=
                 "CREATE TABLE IF NOT EXISTS Categoria(" +
                         "id integer primary key  AUTOINCREMENT UNIQUE NOT NULL,"+
@@ -55,11 +59,15 @@ public class BaseDatos {
     }
     // insertamos los datos de la direccion marcada en la tabla de la base de datps
     public void insertarGasto(String nombre, Double gasto, int Categoria,Date fecha){
-        String sqlInsertarDatos = "INSERT INTO Gastos (Nombre,Dinero,Categoria,Fecha) VALUES ('"+nombre+"','"+gasto+"','"+Categoria+"','"+fecha+"');";
+        SimpleDateFormat formatoDeFecha= new SimpleDateFormat("yyyy-MM-dd");
+        String f= formatoDeFecha.format(fecha);
+        String sqlInsertarDatos = "INSERT INTO Gastos (Nombre,Dinero,Categoria,Fecha) VALUES ('"+nombre+"','"+gasto+"','"+Categoria+"','"+f+"');";
         baseDatos.execSQL(sqlInsertarDatos) ;
     }
     public void insertarIngreso(String nombre, Double gasto,Date fecha){
-        String sqlInsertarDatos = "INSERT INTO Ingresos (Nombre,Dinero,Fecha) VALUES ('"+nombre+"','"+gasto+"','"+fecha+"');";
+        SimpleDateFormat formatoDeFecha= new SimpleDateFormat("yyyy-MM-dd");
+        String f= formatoDeFecha.format(fecha);
+        String sqlInsertarDatos = "INSERT INTO Ingresos (Nombre,Dinero,Fecha) VALUES ('"+nombre+"','"+gasto+"','"+f+"');";
         baseDatos.execSQL(sqlInsertarDatos) ;
     }
     public void insertarCategoria(String categoria){
@@ -93,7 +101,7 @@ public class BaseDatos {
         while (i<c.getCount()) {
             String fecha=(c.getString(indiceFecha));
             Date date=null;
-            SimpleDateFormat formatoDeFecha = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy",
+            SimpleDateFormat formatoDeFecha = new SimpleDateFormat("yyy-MM-dd",
                     Locale.ENGLISH);
             try {
                 date=formatoDeFecha.parse(fecha);
@@ -234,6 +242,33 @@ public class BaseDatos {
                 array[i][1]=a;
                 c.moveToNext();
                 i++;
+            }
+        }
+        return array;
+    }
+    public ArrayList<Double> gastoXMes(){
+        ArrayList<Double> array=new ArrayList<>();
+        String[]Meses=new String[12];
+        Meses[0]="01-31";Meses[1]="02-28";Meses[2]="03-31";Meses[3]="04-30";Meses[4]="05-31";Meses[5]="06-30";Meses[6]="07-31";
+        Meses[7]="08-31";Meses[8]="09-30";Meses[9]="10-31";Meses[10]="11-30";Meses[11]="12-31";
+        String selectGastoXMes="";
+        for(int a=0;a<Meses.length;a++){
+            selectGastoXMes ="Select sum(Dinero) from Gastos Where Fecha BETWEEN '2018-"+Meses[a].split("-")[0]+"-01' and '2018-"+Meses[a]+"'";
+            Cursor c = baseDatos.rawQuery(selectGastoXMes, null); // consulta para coger los datos en un cursor
+//// permitirá acceder más tarde a estas columnas
+// Movemos el cursor al primer resultado
+            c.moveToFirst();
+// Recorremos el resto de resultados
+            if(c.getCount()!=0){
+                int i=0;
+                Double gastoTotal=0.0;
+                // Mientras que todavia quedean direcciones por leer
+                while (i<c.getCount()) {
+                    gastoTotal=c.getDouble(0);
+                    array.add(gastoTotal);
+                    c.moveToNext();
+                    i++;
+                }
             }
         }
         return array;

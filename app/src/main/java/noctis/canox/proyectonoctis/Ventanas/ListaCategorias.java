@@ -30,6 +30,8 @@ import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.util.ArrayList;
+
 import noctis.canox.proyectonoctis.Clases.BaseDatos;
 import noctis.canox.proyectonoctis.Clases.Categoria;
 import noctis.canox.proyectonoctis.Clases.Gasto;
@@ -40,9 +42,9 @@ import noctis.canox.proyectonoctis.R;
 public class ListaCategorias extends AppCompatActivity {
     private ArrayAdapter<Categoria> adaptador;
     private BaseDatos bd;
-    private ListView lista;
     private Object[][] array;
     private GraphicalView chartView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +55,7 @@ public class ListaCategorias extends AppCompatActivity {
 
         array=bd.gastoTotalXCategoria(); // arrray con nombre de categoria y gasto total por cada categoria
         Graficas graficas=new Graficas(this);
-        chartView=graficas.graficoTarta(array,"Gastos por categorias");
-
+        chartView=graficas.graficaTarta(array,"Gasto por categorias");
         layout.addView(chartView);
     }
 
